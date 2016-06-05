@@ -1,3 +1,4 @@
+import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -14,121 +15,68 @@ import java.io.FileNotFoundException;
 
 import java.io.FileOutputStream;
 
-import java.io.IOException ;
+import java.io.IOException;
 
-import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCell;
 
-import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFRow;
 
-import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
 
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 public class ExcelOut {
 
-    public class ExcelUtils {
+    private static HSSFSheet ExcelWSheet;
+    private static HSSFWorkbook ExcelWBook;
+    private static HSSFCell Cell;
 
-        private static XSSFSheet ExcelWSheet;
+    public static Object[][] getTableArray(String FilePath, int SheetIndex) throws Exception {
 
-        private static XSSFWorkbook ExcelWBook;
+        String[][] tabArray = null;
 
-        private static XSSFCell Cell;
+        try {
+            FileInputStream ExcelFile = new FileInputStream(FilePath);
+            // Access the required test data sheet
+            ExcelWBook = new HSSFWorkbook(ExcelFile);
+            ExcelWSheet = ExcelWBook.getSheetAt(SheetIndex);
 
-        private static XSSFRow Row;
+            int startRow = 0;
+            int totalRows = ExcelWSheet.getLastRowNum();
+            // you can write a function as well to get Column count
+            tabArray = new String[totalRows + 1][1];
 
-        public static Object[][] getTableArray(String FilePath, String SheetName) throws Exception {
-
-            String[][] tabArray = null;
-
-            try {
-
-                FileInputStream ExcelFile = new FileInputStream(FilePath);
-
-                // Access the required test data sheet
-
-                ExcelWBook = new XSSFWorkbook(ExcelFile);
-
-                ExcelWSheet = ExcelWBook.getSheet(SheetName);
-
-                int startRow = 1;
-
-                int startCol = 1;
-
-                int ci,cj;
-
-                int totalRows = ExcelWSheet.getLastRowNum();
-
-                // you can write a function as well to get Column count
-
-                int totalCols = 3;
-
-                tabArray=new String[totalRows][totalCols];
-
-                ci=0;
-
-                for (int i=startRow;i<=totalRows;i++, ci++) {
-
-                    cj=0;
-
-                    for (int j=startCol;j<=totalCols;j++, cj++){
-
-                        tabArray[ci][cj]=getCellData(i,j);
-
-                        System.out.println(tabArray[ci][cj]);
-
-                    }
-
-                }
-
+            for (int i = startRow; i <= totalRows; i++) {
+                tabArray[i] = new String[]{
+                        getCellData(i,0),
+                        getCellData(i,1),
+                        getCellData(i,2)};
             }
-
-            catch (FileNotFoundException e){
-
-                System.out.println("Could not read the Excel sheet");
-
-                e.printStackTrace();
-
-            }
-
-            catch (IOException e){
-
-                System.out.println("Could not read the Excel sheet");
-
-                e.printStackTrace();
-
-            }
-
-            return(tabArray);
-
+        } catch (FileNotFoundException e) {
+            System.out.println("Could not read the Excel sheet");
+            e.printStackTrace();
+        } catch (IOException e) {
+            System.out.println("Could not read the Excel sheet");
+            e.printStackTrace();
         }
 
-        public static String getCellData(int RowNum, int ColNum) throws Exception {
+        return tabArray;
+    }
 
-            try{
+    public static String getCellData(int RowNum, int ColNum) throws Exception {
 
-                Cell = ExcelWSheet.getRow(RowNum).getCell(ColNum);
-
-                int dataType = Cell.getCellType();
-
-                if  (dataType == 3) {
-
-                    return "";
-
-                }else{
-
-                    String CellData = Cell.getStringCellValue();
-
-                    return CellData;
-
-                }catch (Exception e){
-
-                    System.out.println(e.getMessage());
-
-                    throw (e);
-
-                }
-
+        try {
+            Cell = ExcelWSheet.getRow(RowNum).getCell(ColNum);
+            int dataType = Cell.getCellType();
+            if (dataType == 3) {
+                return "";
+            } else {
+                String CellData = "" + Cell.getNumericCellValue();
+                return CellData;
             }
-
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw (e);
         }
+    }
 }

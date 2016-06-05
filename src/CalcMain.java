@@ -1,5 +1,6 @@
 
 
+import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 
 import org.testng.annotations.Test;
@@ -9,17 +10,17 @@ import org.testng.annotations.Test;
  */
 public class CalcMain {
 
-    @Test(dataProvider="ExcelSmixel")
-
-    @DataProvider
-
-    public Object[][] Authentication() throws Exception{
-
-        Object[][] testObjArray = ExcelOut.ExcelUtils.getTableArray("C:\\Users\\diz\\IdeaProjects\\Data.xls","Sheet1");
-
-        return (testObjArray);
-
+    @DataProvider(name = "Addition", parallel = true)
+    public static Object[][] Authentication() throws Exception {
+        Object[][] testObjArray = ExcelOut.getTableArray("..\\CalcA\\src\\Data.xls", 0);
+        return testObjArray;
     }
 
-
+    @Test(dataProvider = "Addition")
+    public void test(String a, String b, String c) throws InterruptedException {
+        double actualResult = Double.parseDouble(a) + Double.parseDouble(b);
+        double expectedResult = Double.parseDouble(c);
+        Assert.assertEquals(actualResult, expectedResult, "Addition method failed");
+        Thread.sleep(1000);
+    }
 }
