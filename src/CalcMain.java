@@ -43,7 +43,7 @@ public class CalcMain {
         return testObjArray;
     }
 
-    @Test(dataProvider = "Milt")
+    @Test(dataProvider = "Mult")
     public void test2(String a, String b, String c) throws InterruptedException {
         double actualResult = Double.parseDouble(a) * Double.parseDouble(b);
         double expectedResult = Double.parseDouble(c);
